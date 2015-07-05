@@ -33,7 +33,7 @@ setup(name='upass',
       zip_safe=False,
       cmdclass={'test': PyTest},
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      classifiers=['Development Status :: 1 - Planning',
+      classifiers=['Development Status :: 3 - Alpha',
                    'Programming Language :: Python',
                    'Programming Language :: Python :: 2',
                    'Programming Language :: Python :: 2.7',

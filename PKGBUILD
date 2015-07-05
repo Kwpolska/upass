@@ -13,7 +13,7 @@ makedepends=('python' 'python2' 'python-setuptools' 'python2-setuptools'
              'python2-pyperclip')
 options=(!emptydirs)
 source=("https://pypi.python.org/packages/source/${_pyname:0:1}/${_pyname}/${_pyname}-${pkgver}.tar.gz")
-md5sums=('7e885f7b9239226990fbe9f2f6baf444')
+md5sums=('ce41bbe2961dd7d655870149ead54871')
 
 prepare() {
   cd "${srcdir}/${_pyname}-${pkgver}"
