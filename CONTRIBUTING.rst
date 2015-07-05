@@ -3,9 +3,9 @@ Appendix A. Contribution rules
 ==============================
 :Info: Those are the contribution rules for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
-:Copyright: © 2014-2015, Chris Warrick.
+:Copyright: © 2015, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2015-01-01
+:Date: 2015-07-05
 :Version: 0.1.0
 
 .. index:: contributing
