@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.0
+# upass v0.1.1
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -20,7 +20,7 @@ import subprocess
 
 __all__ = ('main', 'App')
 HELP = """upass is an interface for pass, the standard unix password manager.
-Use arrows and Enter to navigate the directory tree."
+Use arrows and Enter to navigate the directory tree.
 Available commands:
    d display
    s display
@@ -29,7 +29,6 @@ Available commands:
    / search
    h help
    q quit
-Press capitalized letters or click buttons on the bottom panel."
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
 
 
@@ -40,10 +39,10 @@ class PasswordButton(urwid.Button):
     def __init__(self, caption, callback):
         """Initialize a button."""
         super(PasswordButton, self).__init__("")
-        caption = caption[:-len('.gpg')]
-        urwid.connect_signal(self, 'click', callback, caption)
+        self.caption = caption[:-len('.gpg')]
+        urwid.connect_signal(self, 'click', callback, self.caption)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'├ ', caption], 0), 'button', 'button_reversed')
+            [u'├ ', self.caption], 0), 'button', 'button_reversed')
 
 
 class DirectoryButton(urwid.Button):
@@ -53,9 +52,10 @@ class DirectoryButton(urwid.Button):
     def __init__(self, caption, callback):
         """Initialize a button."""
         super(DirectoryButton, self).__init__("")
-        urwid.connect_signal(self, 'click', callback, caption)
+        self.caption = caption
+        urwid.connect_signal(self, 'click', callback, self.caption)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'├ ', caption, '/'], 0), 'button', 'button_reversed')
+            [u'├ ', self.caption, '/'], 0), 'button', 'button_reversed')
 
 
 class ActionButton(urwid.Button):
@@ -65,9 +65,11 @@ class ActionButton(urwid.Button):
     def __init__(self, caption, callback, user_arg=None):
         """Initialize a button."""
         super(ActionButton, self).__init__("")
+        self.caption = caption
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'> ', caption], 0), 'button', 'button_reversed')
+            [u'> ', self.caption], 0), 'button', 'button_reversed')
+
 
 class BackButton(urwid.Button):
 
@@ -76,9 +78,11 @@ class BackButton(urwid.Button):
     def __init__(self, caption, callback, user_arg=None):
         """Initialize a button."""
         super(BackButton, self).__init__("")
+        self.caption = caption
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'< ', caption], 0), 'button', 'button_reversed')
+            [u'< ', self.caption], 0), 'button', 'button_reversed')
+
 
 class App(object):
 
@@ -129,6 +133,7 @@ class App(object):
             'h': self.help,
             '?': self.help,
             'q': self.quit,
+            'f10': self.quit,  # unadvertised backup
         }
 
         self.frame = urwid.Frame(self.box, header=self.header,
@@ -140,17 +145,19 @@ class App(object):
         """Handle unhandled input."""
         try:
             key = key.lower()
+            # string == keyboard input
+            if key in self.keys:
+                self.keys[key]('unhandled')
+            elif key == 'tab':
+                if self.frame.focus_position == 'body':
+                    self.frame.focus_position = 'footer'
+                elif self.frame.focus_position == 'footer':
+                    self.frame.focus_position = 'body'
+            elif self.mode == 'search' and key == 'enter':
+                self.search_results('unhandled')
         except AttributeError:
+            # tuple == mouse event
             pass
-        if key in self.keys:
-            self.keys[key]('unhandled')
-        elif key == 'tab':
-            if self.frame.focus_position == 'body':
-                self.frame.focus_position = 'footer'
-            elif self.frame.focus_position == 'footer':
-                self.frame.focus_position = 'body'
-        elif self.mode == 'search' and key == 'enter':
-            self.search_results('unhandled')
 
     def refresh(self):
         """Refresh the passwords."""
@@ -160,7 +167,6 @@ class App(object):
         self.topdir_passwords = [i for i in os.listdir(self.home)
                                  if not i.startswith('.') and
                                  i not in self.directories]
-        self.all_passwords = self.passwords + self.topdir_passwords
 
     def refresh_and_reload(self, originator):
         """Refresh the passwords and rebuild the directory listing."""
@@ -170,8 +176,8 @@ class App(object):
     def get_selected_password(self, originator):
         """Get the currently selected password."""
         if self.mode in ('dir_load', 'search_results'):
-            path = self.box.focus.base_widget.label
-        elif self.mode == 'pass_load':
+            path = self.box.focus.caption
+        elif self.mode in ('pass_load', 'call_pass'):
             path = self.current
         else:
             return None, None
@@ -181,13 +187,13 @@ class App(object):
     def display_selected(self, originator):
         """Display the currently selected password."""
         path, pathg = self.get_selected_password(originator)
-        if pathg in self.all_passwords:
+        if pathg in self.passwords:
             self.call_pass(originator, (path, False))
 
     def copy_selected(self, originator):
         """Copy the currently selected password."""
         path, pathg = self.get_selected_password(originator)
-        if pathg in self.all_passwords:
+        if pathg in self.passwords:
             self.call_pass(originator, (path, True))
 
     def search(self, originator):
@@ -200,19 +206,17 @@ class App(object):
         self._clear_box()
         self.search_input = urwid.Edit(("highlight", "Keyword: "))
         self.box.body.append(self.search_input)
-        b = urwid.ActionButton('SEARCH', self.search_results)
-        urwid.connect_signal(b, 'click', self.search_results)
-        self.box.body.append(
-            urwid.AttrMap(b, 'button', 'button_reversed'))
+        self.box.body.append(ActionButton('SEARCH', self.search_results))
 
     def search_results(self, originator):
         """Display the search results."""
         query = self.search_input.text[len("Keyword: "):]
         self.mode = 'search_results'
         self.set_header('SEARCH RESULTS FOR "{0}"'.format(query))
-        results = [i for i in self.all_passwords if query in i]
+        results = [i for i in self.passwords if query in i]
         self._clear_box()
-        self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
+        self.box.body.append(BackButton('BACK', self.load_dispatch,
+                                        self.current))
         self._make_password_buttons(results)
 
     def help(self, originator):
@@ -223,11 +227,10 @@ class App(object):
         self.mode = 'help'
         self.set_header('HELP')
         self._clear_box()
-        HS = HELP.split('\n')
-        for ln in HS:
-            self.box.body.append(urwid.Text(ln))
-        self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
-        self.box.set_focus(len(HS))
+        self.box.body.append(urwid.Text(HELP))
+        self.box.body.append(BackButton('BACK', self.load_dispatch,
+                                        self.current))
+        self.box.set_focus(1)
         self.frame.focus_position = 'body'
 
     def quit(self, originator):
@@ -289,8 +292,10 @@ class App(object):
         self._clear_box()
         prevdir = os.path.dirname(path) or '.'
         self.box.body.append(BackButton('BACK', self.dir_load, prevdir))
-        self.box.body.append(ActionButton('DISPLAY', self.call_pass, (path, False)))
-        self.box.body.append(ActionButton('COPY', self.call_pass, (path, True)))
+        self.box.body.append(ActionButton('DISPLAY', self.call_pass,
+                                          (path, False)))
+        self.box.body.append(ActionButton('COPY', self.call_pass,
+                                          (path, True)))
 
     def call_pass(self, originator, args):
         """Call pass to get a password."""
@@ -298,7 +303,7 @@ class App(object):
         self.set_header(self.current)
         pargs = ['pass', self.current]
         copymsg = ' and copying output afterwards' if copy else ''
-        self.mode = 'pass_call'
+        self.mode = 'call_pass'
         self._clear_box()
         self.box.body.append(urwid.AttrMap(
             urwid.Text('Calling {0}{1}'.format(' '.join(pargs), copymsg)),
@@ -312,9 +317,11 @@ class App(object):
             self.box.body.append(urwid.Text(stdout.strip()))
             if copy:
                 try:
-                    pyperclip.copy(stdout.strip().decode('utf-8'))
+                    copytarget = stdout.decode('utf-8')
                 except AttributeError:
-                    pyperclip.copy(stdout.strip())
+                    copytarget = stdout
+                copytarget = copytarget.split('\n', 1)[0]
+                pyperclip.copy(copytarget)
                 self.box.body.append(
                     urwid.AttrMap(
                         urwid.Text('Copied to clipboard.'), 'highlight'))
