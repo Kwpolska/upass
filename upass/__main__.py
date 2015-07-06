@@ -165,7 +165,6 @@ class App(object):
         self.topdir_passwords = [i for i in os.listdir(self.home)
                                  if not i.startswith('.') and
                                  i not in self.directories]
-        self.all_passwords = self.passwords + self.topdir_passwords
 
     def refresh_and_reload(self, originator):
         """Refresh the passwords and rebuild the directory listing."""
@@ -186,13 +185,13 @@ class App(object):
     def display_selected(self, originator):
         """Display the currently selected password."""
         path, pathg = self.get_selected_password(originator)
-        if pathg in self.all_passwords:
+        if pathg in self.passwords:
             self.call_pass(originator, (path, False))
 
     def copy_selected(self, originator):
         """Copy the currently selected password."""
         path, pathg = self.get_selected_password(originator)
-        if pathg in self.all_passwords:
+        if pathg in self.passwords:
             self.call_pass(originator, (path, True))
 
     def search(self, originator):
@@ -215,7 +214,7 @@ class App(object):
         query = self.search_input.text[len("Keyword: "):]
         self.mode = 'search_results'
         self.set_header('SEARCH RESULTS FOR "{0}"'.format(query))
-        results = [i for i in self.all_passwords if query in i]
+        results = [i for i in self.passwords if query in i]
         self._clear_box()
         self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
         self._make_password_buttons(results)
