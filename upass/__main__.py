@@ -176,7 +176,7 @@ class App(object):
         """Get the currently selected password."""
         if self.mode in ('dir_load', 'search_results'):
             path = self.box.focus.caption
-        elif self.mode == 'pass_load':
+        elif self.mode in ('pass_load', 'call_pass'):
             path = self.current
         else:
             return None, None
@@ -303,7 +303,7 @@ class App(object):
         self.set_header(self.current)
         pargs = ['pass', self.current]
         copymsg = ' and copying output afterwards' if copy else ''
-        self.mode = 'pass_call'
+        self.mode = 'call_pass'
         self._clear_box()
         self.box.body.append(urwid.AttrMap(
             urwid.Text('Calling {0}{1}'.format(' '.join(pargs), copymsg)),
