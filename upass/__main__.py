@@ -314,9 +314,11 @@ class App(object):
             self.box.body.append(urwid.Text(stdout.strip()))
             if copy:
                 try:
-                    pyperclip.copy(stdout.strip().decode('utf-8'))
+                    copytarget = stdout.decode('utf-8')
                 except AttributeError:
-                    pyperclip.copy(stdout.strip())
+                    copytarget = stdout
+                copytarget = copytarget.split('\n', 1)[0]
+                pyperclip.copy(copytarget)
                 self.box.body.append(
                     urwid.AttrMap(
                         urwid.Text('Copied to clipboard.'), 'highlight'))
