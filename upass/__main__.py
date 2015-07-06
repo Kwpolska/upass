@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.0
+# upass v0.1.1
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -215,7 +215,8 @@ class App(object):
         self.set_header('SEARCH RESULTS FOR "{0}"'.format(query))
         results = [i for i in self.passwords if query in i]
         self._clear_box()
-        self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
+        self.box.body.append(BackButton('BACK', self.load_dispatch,
+                                        self.current))
         self._make_password_buttons(results)
 
     def help(self, originator):
@@ -227,7 +228,8 @@ class App(object):
         self.set_header('HELP')
         self._clear_box()
         self.box.body.append(urwid.Text(HELP))
-        self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
+        self.box.body.append(BackButton('BACK', self.load_dispatch,
+                                        self.current))
         self.box.set_focus(1)
         self.frame.focus_position = 'body'
 
@@ -290,8 +292,10 @@ class App(object):
         self._clear_box()
         prevdir = os.path.dirname(path) or '.'
         self.box.body.append(BackButton('BACK', self.dir_load, prevdir))
-        self.box.body.append(ActionButton('DISPLAY', self.call_pass, (path, False)))
-        self.box.body.append(ActionButton('COPY', self.call_pass, (path, True)))
+        self.box.body.append(ActionButton('DISPLAY', self.call_pass,
+                                          (path, False)))
+        self.box.body.append(ActionButton('COPY', self.call_pass,
+                                          (path, True)))
 
     def call_pass(self, originator, args):
         """Call pass to get a password."""

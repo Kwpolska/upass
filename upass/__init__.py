@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.0
+# upass v0.1.1
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # All rights reserved.
@@ -40,7 +40,7 @@ Console UI for pass.
 """
 
 __title__ = 'upass'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __author__ = 'Chris Warrick'
 __license__ = '3-clause BSD'
 __docformat__ = 'restructuredtext en'
