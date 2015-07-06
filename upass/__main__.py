@@ -204,10 +204,7 @@ class App(object):
         self._clear_box()
         self.search_input = urwid.Edit(("highlight", "Keyword: "))
         self.box.body.append(self.search_input)
-        b = urwid.ActionButton('SEARCH', self.search_results)
-        urwid.connect_signal(b, 'click', self.search_results)
-        self.box.body.append(
-            urwid.AttrMap(b, 'button', 'button_reversed'))
+        self.box.body.append(ActionButton('SEARCH', self.search_results))
 
     def search_results(self, originator):
         """Display the search results."""
