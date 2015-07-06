@@ -40,10 +40,10 @@ class PasswordButton(urwid.Button):
     def __init__(self, caption, callback):
         """Initialize a button."""
         super(PasswordButton, self).__init__("")
-        caption = caption[:-len('.gpg')]
-        urwid.connect_signal(self, 'click', callback, caption)
+        self.caption = caption[:-len('.gpg')]
+        urwid.connect_signal(self, 'click', callback, self.caption)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'├ ', caption], 0), 'button', 'button_reversed')
+            [u'├ ', self.caption], 0), 'button', 'button_reversed')
 
 
 class DirectoryButton(urwid.Button):
@@ -53,9 +53,10 @@ class DirectoryButton(urwid.Button):
     def __init__(self, caption, callback):
         """Initialize a button."""
         super(DirectoryButton, self).__init__("")
-        urwid.connect_signal(self, 'click', callback, caption)
+        self.caption = caption
+        urwid.connect_signal(self, 'click', callback, self.caption)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'├ ', caption, '/'], 0), 'button', 'button_reversed')
+            [u'├ ', self.caption, '/'], 0), 'button', 'button_reversed')
 
 
 class ActionButton(urwid.Button):
@@ -65,9 +66,10 @@ class ActionButton(urwid.Button):
     def __init__(self, caption, callback, user_arg=None):
         """Initialize a button."""
         super(ActionButton, self).__init__("")
+        self.caption = caption
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'> ', caption], 0), 'button', 'button_reversed')
+            [u'> ', self.caption], 0), 'button', 'button_reversed')
 
 
 class BackButton(urwid.Button):
@@ -77,9 +79,10 @@ class BackButton(urwid.Button):
     def __init__(self, caption, callback, user_arg=None):
         """Initialize a button."""
         super(BackButton, self).__init__("")
+        self.caption = caption
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
-            [u'< ', caption], 0), 'button', 'button_reversed')
+            [u'< ', self.caption], 0), 'button', 'button_reversed')
 
 
 class App(object):
@@ -172,7 +175,7 @@ class App(object):
     def get_selected_password(self, originator):
         """Get the currently selected password."""
         if self.mode in ('dir_load', 'search_results'):
-            path = self.box.focus.base_widget.label
+            path = self.box.focus.caption
         elif self.mode == 'pass_load':
             path = self.current
         else:
