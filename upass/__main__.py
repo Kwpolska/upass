@@ -224,11 +224,9 @@ class App(object):
         self.mode = 'help'
         self.set_header('HELP')
         self._clear_box()
-        HS = HELP.split('\n')
-        for ln in HS:
-            self.box.body.append(urwid.Text(ln))
+        self.box.body.append(urwid.Text(HELP))
         self.box.body.append(BackButton('BACK', self.load_dispatch, self.current))
-        self.box.set_focus(len(HS))
+        self.box.set_focus(1)
         self.frame.focus_position = 'body'
 
     def quit(self, originator):
