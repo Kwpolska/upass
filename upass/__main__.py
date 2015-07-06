@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.0
+# upass v0.1.1
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.

@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2015-07-05
-:Version: 0.1.0
+:Date: 2015-07-06
+:Version: 0.1.1
 
 .. index:: CHANGELOG
 
@@ -19,8 +19,22 @@ More information can be found on GitHub in the `releases section
 Version History
 ===============
 
+0.1.1
+    * Fix search form
+    * Fix top-level passwords appearing twice
+    * Fix d/s/c for directory listings
+    * Allow d/s/c keys in password display mode
+    * Copy only the first line of multiline passwords
+
 0.1.0
     Initial release.
+
+0.1.1
+    * Fix search form
+    * Fix top-level passwords appearing twice
+    * Fix d/s/c for directory listings
+    * Allow d/s/c keys in password display mode
+    * Copy only the first line of multiline passwords
 
 0.1.0
     Initial release.
