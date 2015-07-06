@@ -84,6 +84,17 @@ class BackButton(urwid.Button):
             [u'< ', self.caption], 0), 'button', 'button_reversed')
 
 
+class FancyListBox(urwid.ListBox):
+    """A list box you can scroll in fancy ways."""
+    def keypress(self, size, key):
+        """Handle keypresses."""
+        if key == 'home':
+            self.set_focus(0)
+        elif key == 'end':
+            self.set_focus(len(self.body) - 1)
+        return super(FancyListBox, self).keypress(size, key)
+
+
 class App(object):
 
     """The upass app object."""
@@ -104,7 +115,7 @@ class App(object):
             "upass v{0}".format(upass.__version__)), 'header')
 
         listbox_content = [urwid.Text('LOADING')]
-        self.box = urwid.ListBox(urwid.SimpleFocusListWalker(listbox_content))
+        self.box = FancyListBox(urwid.SimpleFocusListWalker(listbox_content))
 
         self.home = os.path.expanduser('~/.password-store')
         self.refresh()
