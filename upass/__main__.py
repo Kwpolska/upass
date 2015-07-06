@@ -69,6 +69,7 @@ class ActionButton(urwid.Button):
         self._w = urwid.AttrMap(urwid.SelectableIcon(
             [u'> ', caption], 0), 'button', 'button_reversed')
 
+
 class BackButton(urwid.Button):
 
     """An action button."""
@@ -79,6 +80,7 @@ class BackButton(urwid.Button):
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
             [u'< ', caption], 0), 'button', 'button_reversed')
+
 
 class App(object):
 
