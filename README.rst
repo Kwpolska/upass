@@ -7,6 +7,8 @@ upass.  Console UI for pass.
 :Date: 2015-07-06
 :Version: 0.1.1
 
+.. image:: https://chriswarrick.com/galleries/upass/directory-listing.png
+
 INSTALLATION
 ------------
 
