@@ -20,7 +20,7 @@ import subprocess
 
 __all__ = ('main', 'App')
 HELP = """upass is an interface for pass, the standard unix password manager.
-Use arrows and Enter to navigate the directory tree."
+Use arrows and Enter to navigate the directory tree.
 Available commands:
    d display
    s display
@@ -29,7 +29,6 @@ Available commands:
    / search
    h help
    q quit
-Press capitalized letters or click buttons on the bottom panel."
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
 
 
@@ -134,6 +133,7 @@ class App(object):
             'h': self.help,
             '?': self.help,
             'q': self.quit,
+            'f10': self.quit,  # unadvertised backup
         }
 
         self.frame = urwid.Frame(self.box, header=self.header,
