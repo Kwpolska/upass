@@ -145,17 +145,19 @@ class App(object):
         """Handle unhandled input."""
         try:
             key = key.lower()
+            # string == keyboard input
+            if key in self.keys:
+                self.keys[key]('unhandled')
+            elif key == 'tab':
+                if self.frame.focus_position == 'body':
+                    self.frame.focus_position = 'footer'
+                elif self.frame.focus_position == 'footer':
+                    self.frame.focus_position = 'body'
+            elif self.mode == 'search' and key == 'enter':
+                self.search_results('unhandled')
         except AttributeError:
+            # tuple == mouse event
             pass
-        if key in self.keys:
-            self.keys[key]('unhandled')
-        elif key == 'tab':
-            if self.frame.focus_position == 'body':
-                self.frame.focus_position = 'footer'
-            elif self.frame.focus_position == 'footer':
-                self.frame.focus_position = 'body'
-        elif self.mode == 'search' and key == 'enter':
-            self.search_results('unhandled')
 
     def refresh(self):
         """Refresh the passwords."""
