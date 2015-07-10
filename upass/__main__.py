@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.1
+# upass v0.1.2
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -84,6 +84,42 @@ class BackButton(urwid.Button):
             [u'< ', self.caption], 0), 'button', 'button_reversed')
 
 
+# h/t Heiko Noordhof @hkoof
+class FancyListBox(urwid.ListBox):
+
+    """A list box you can scroll in fancy ways."""
+
+    def keypress(self, size, key):
+        """Handle keypresses."""
+        if key == 'home':
+            self.set_focus(0)
+        elif key == 'end':
+            self.set_focus(len(self.body) - 1)
+        return super(FancyListBox, self).keypress(size, key)
+
+    def mouse_event(self, size, event, button, col, row, focus):
+        """Handle scroll events."""
+        currentfocus = self.focus_position
+        newfocus = None
+        maxindex = len(self.body) - 1
+
+        if button == 4:
+            newfocus = currentfocus - 3
+        elif button == 5:
+            newfocus = currentfocus + 3
+
+        if newfocus < 0:
+            newfocus = 0
+        elif newfocus > maxindex:
+            newfocus = maxindex
+
+        if newfocus is None:
+            return False
+        self.set_focus(newfocus)
+        return super(FancyListBox, self).mouse_event(
+            size, event, button, col, row, focus)
+
+
 class App(object):
 
     """The upass app object."""
@@ -104,7 +140,7 @@ class App(object):
             "upass v{0}".format(upass.__version__)), 'header')
 
         listbox_content = [urwid.Text('LOADING')]
-        self.box = urwid.ListBox(urwid.SimpleFocusListWalker(listbox_content))
+        self.box = FancyListBox(urwid.SimpleFocusListWalker(listbox_content))
 
         self.home = os.path.expanduser('~/.password-store')
         self.refresh()

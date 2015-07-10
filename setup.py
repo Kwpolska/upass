@@ -21,7 +21,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 setup(name='upass',
-      version='0.1.1',
+      version='0.1.2',
       description='Console UI for pass.',
       keywords='upass',
       author='Chris Warrick',
