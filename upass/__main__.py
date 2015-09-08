@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.2
+# upass v0.1.3
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -350,7 +350,6 @@ class App(object):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self._clear_box()
-            self.box.body.append(urwid.Text(stdout.strip()))
             if copy:
                 try:
                     copytarget = stdout.decode('utf-8')
@@ -362,6 +361,7 @@ class App(object):
                     urwid.AttrMap(
                         urwid.Text('Copied to clipboard.'), 'highlight'))
             else:
+                self.box.body.append(urwid.Text(stdout.strip()))
                 self.box.body.append(ActionButton('COPY', self.call_pass,
                                                   (self.current, True)))
         else:
@@ -375,8 +375,6 @@ class App(object):
             'BACK TO PASSWORD', self.pass_load, self.current))
         if p.returncode != 0:
             self.box.set_focus(3)
-        elif copy:
-            self.box.set_focus(2)
         else:
             self.box.set_focus(1)
 
