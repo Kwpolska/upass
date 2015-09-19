@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2015-09-08
-:Version: 0.1.3
+:Date: 2015-09-19
+:Version: 0.1.4
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.4
+    * Add j/k support for moving in the list (Issue #4)
 
 0.1.3
     * Don’t show copied passwords (Issue #3)
@@ -34,6 +37,9 @@ Version History
 
 0.1.0
     Initial release.
+
+0.1.4
+    * Add j/k support for moving in the list (Issue #4)
 
 0.1.3
     * Don’t show copied passwords (Issue #3)

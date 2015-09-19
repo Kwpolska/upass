@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.3
+# upass v0.1.4
 # Console UI for pass.
 # Copyright © 2015, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -20,7 +20,7 @@ import subprocess
 
 __all__ = ('main', 'App')
 HELP = """upass is an interface for pass, the standard unix password manager.
-Use arrows and Enter to navigate the directory tree.
+Use up/down arrows or jk (vim-style) and Enter to navigate the directory tree.
 Available commands:
    d display
    s display
@@ -91,10 +91,23 @@ class FancyListBox(urwid.ListBox):
 
     def keypress(self, size, key):
         """Handle keypresses."""
+        currentfocus = self.focus_position
+        maxindex = len(self.body) - 1
+        newfocus = None
         if key == 'home':
-            self.set_focus(0)
+            newfocus = 0
         elif key == 'end':
-            self.set_focus(len(self.body) - 1)
+            newfocus = maxindex
+        elif key == 'k':
+            newfocus = currentfocus - 1
+        elif key == 'j':
+            newfocus = currentfocus + 1
+        if newfocus is not None:
+            if newfocus < 0:
+                newfocus = 0
+            elif newfocus > maxindex:
+                newfocus = maxindex
+            self.set_focus(newfocus)
         return super(FancyListBox, self).keypress(size, key)
 
     def mouse_event(self, size, event, button, col, row, focus):
