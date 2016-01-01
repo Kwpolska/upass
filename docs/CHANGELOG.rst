@@ -3,9 +3,9 @@ Appendix C. Changelog
 =====================
 :Info: This is the changelog for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
-:Copyright: © 2015, Chris Warrick.
+:Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2015-09-19
+:Date: 2016-01-01
 :Version: 0.1.4
 
 .. index:: CHANGELOG
