@@ -6,7 +6,7 @@ Appendix B. License for upass
 :Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
 :Date: 2016-02-07
-:Version: 0.1.5
+:Version: 0.1.6
 
 .. index:: LICENSE
 
