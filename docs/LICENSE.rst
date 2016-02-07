@@ -1,16 +1,16 @@
-================================
+=============================
 Appendix B. License for upass
-================================
+=============================
 :Info: This is the license for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
-:Copyright: © 2015, Chris Warrick.
+:Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2015-09-19
-:Version: 0.1.4
+:Date: 2016-02-07
+:Version: 0.1.5
 
 .. index:: LICENSE
 
-Copyright © 2015, Chris Warrick.
+Copyright © 2015-2016, Chris Warrick.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

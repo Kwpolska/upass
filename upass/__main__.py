@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.4
+# upass v0.1.5
 # Console UI for pass.
-# Copyright © 2015, Chris Warrick.
+# Copyright © 2015-2016, Chris Warrick.
 # See /LICENSE for licensing information.
 
 """
 upass user interface.
 
-:Copyright: © 2015, Chris Warrick.
+:Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE).
 """
 
@@ -156,9 +156,15 @@ class App(object):
         self.box = FancyListBox(urwid.SimpleFocusListWalker(listbox_content))
 
         self.home = os.path.expanduser('~/.password-store')
-        self.refresh()
-        self.current = '.'
-        self.dir_load(None, self.current)
+        if os.path.exists(self.home) and os.listdir(self.home):
+            self.refresh()
+            self.current = '.'
+            self.dir_load(None, self.current)
+        else:
+            self._clear_box()
+            self.box.body.extend([urwid.Text(("error", 'Your Password Store is empty.')),
+                               urwid.Text('Please use the `pass` command to create passwords. upass is a read-only browser.'),
+                               urwid.Text('Press q to exit.')])
 
         column_data = [
             urwid.Button('DiSplay', self.display_selected),
@@ -411,7 +417,7 @@ class App(object):
 
 def main():
     """The main function of upass."""
-    App().run()
+    return App().run()
 
 if __name__ == '__main__':
     try:
