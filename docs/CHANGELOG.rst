@@ -6,7 +6,7 @@ Appendix C. Changelog
 :Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
 :Date: 2016-02-07
-:Version: 0.1.5
+:Version: 0.1.6
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.6
+    * fix setup.py/MANIFEST.in
 
 0.1.5
     * Warn if store is empty or does not exist (Issue #5)
@@ -40,6 +43,9 @@ Version History
 
 0.1.0
     Initial release.
+
+0.1.6
+    * fix setup.py/MANIFEST.in
 
 0.1.5
     * Warn if store is empty or does not exist (Issue #5)
