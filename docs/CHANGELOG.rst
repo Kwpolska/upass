@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2016-01-01
-:Version: 0.1.4
+:Date: 2016-02-07
+:Version: 0.1.5
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.5
+    * Warn if store is empty or does not exist (Issue #5)
 
 0.1.4
     * Add j/k support for moving in the list (Issue #4)
@@ -37,6 +40,9 @@ Version History
 
 0.1.0
     Initial release.
+
+0.1.5
+    * Warn if store is empty or does not exist (Issue #5)
 
 0.1.4
     * Add j/k support for moving in the list (Issue #4)
