@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.6
+# upass v0.1.7
 # Console UI for pass.
 # Copyright © 2015-2016, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -121,14 +121,15 @@ class FancyListBox(urwid.ListBox):
         elif button == 5:
             newfocus = currentfocus + 3
 
-        if newfocus < 0:
-            newfocus = 0
-        elif newfocus > maxindex:
-            newfocus = maxindex
+        if newfocus is not None:
+            if newfocus < 0:
+                newfocus = 0
+            elif newfocus > maxindex:
+                newfocus = maxindex
 
-        if newfocus is None:
-            return False
-        self.set_focus(newfocus)
+            self.set_focus(newfocus)
+
+        # handle clicks
         return super(FancyListBox, self).mouse_event(
             size, event, button, col, row, focus)
 

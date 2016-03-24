@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2016, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2016-02-07
-:Version: 0.1.6
+:Date: 2016-03-24
+:Version: 0.1.7
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.7
+    * Fix mouse support (Issue #13)
 
 0.1.6
     * fix setup.py/MANIFEST.in
@@ -43,6 +46,9 @@ Version History
 
 0.1.0
     Initial release.
+
+0.1.7
+    * Fix mouse support (Issue #13)
 
 0.1.6
     * fix setup.py/MANIFEST.in
