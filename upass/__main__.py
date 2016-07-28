@@ -98,9 +98,9 @@ class FancyListBox(urwid.ListBox):
             newfocus = 0
         elif key == 'end':
             newfocus = maxindex
-        elif key == 'k':
+        elif key == 'k' and self._app.mode != 'search':
             newfocus = currentfocus - 1
-        elif key == 'j':
+        elif key == 'j' and self._app.mode != 'search':
             newfocus = currentfocus + 1
         if newfocus is not None:
             if newfocus < 0:
@@ -155,6 +155,7 @@ class App(object):
 
         listbox_content = [urwid.Text('LOADING')]
         self.box = FancyListBox(urwid.SimpleFocusListWalker(listbox_content))
+        self.box._app = self
 
         self.home = os.path.expanduser('~/.password-store')
         if os.path.exists(self.home) and os.listdir(self.home):
