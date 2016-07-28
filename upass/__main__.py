@@ -21,7 +21,7 @@ import subprocess
 __all__ = ('main', 'App')
 HELP = """upass is an interface for pass, the standard unix password manager.
 Use up/down arrows or jk (vim-style) and Enter to navigate the directory tree.
-Available commands:
+Available commands (with default key bindings):
    d display
    s display
    c copy
@@ -32,7 +32,7 @@ Available commands:
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
 
 
-# Case folding.
+# Case folding
 if sys.version_info[0] == 2:
     try:
         from py2casefold import casefold
@@ -40,6 +40,7 @@ if sys.version_info[0] == 2:
         casefold = str.lower  # workaround
 else:
     casefold = str.casefold
+
 
 class PasswordButton(urwid.Button):
 
@@ -82,15 +83,17 @@ class ActionButton(urwid.Button):
 
 class BackButton(urwid.Button):
 
-    """An action button."""
+    """A back button."""
 
-    def __init__(self, caption, callback, user_arg=None):
+    def __init__(self, caption, callback, user_arg, app):
         """Initialize a button."""
         super(BackButton, self).__init__("")
         self.caption = caption
         urwid.connect_signal(self, 'click', callback, user_arg)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
             [u'< ', self.caption], 0), 'button', 'button_reversed')
+        app.back_callback = callback
+        app.back_arg = user_arg
 
 
 # h/t Heiko Noordhof @hkoof
@@ -156,6 +159,8 @@ class App(object):
         ('button', 'white', ''),
         ('button_reversed', 'standout', ''),
     ]
+    back_callback = None
+    back_arg = None
 
     def __init__(self):
         """Initialize the app."""
@@ -191,17 +196,27 @@ class App(object):
 
         self.footer = urwid.Columns(column_data)
 
-        self.keys = {
-            'd': self.display_selected,
-            's': self.display_selected,
-            'c': self.copy_selected,
-            'r': self.refresh_and_reload,
-            '/': self.search,
-            'h': self.help,
-            '?': self.help,
-            'q': self.quit,
-            'f10': self.quit,  # unadvertised backup
+        # Load keys from ini file
+        ini_commands = {
+            'display': self.display_selected,
+            'copy': self.copy_selected,
+            'refresh': self.refresh_and_reload,
+            'search': self.search,
+            'help': self.help,
+            'quit': self.quit
         }
+
+        self.keys = {}
+        for command, handler in ini_commands.items():
+            bindkeys = upass.config.get('keys', command).strip().split()
+            for k in bindkeys:
+                self.keys[k] = handler
+
+        if upass.config.getboolean('keys', 'uplevel_h'):
+            self.keys['h'] = self.uplevel
+
+        if upass.config.getboolean('keys', 'downlevel_l'):
+            self.keys['l'] = self.downlevel
 
         self.frame = urwid.Frame(self.box, header=self.header,
                                  footer=self.footer)
@@ -284,7 +299,7 @@ class App(object):
         results = [i for i in self.passwords if query_cf in casefold(i)]
         self._clear_box()
         self.box.body.append(BackButton('BACK', self.load_dispatch,
-                                        self.current))
+                                        self.current, self))
         self._make_password_buttons(results)
 
     def help(self, originator):
@@ -297,7 +312,7 @@ class App(object):
         self._clear_box()
         self.box.body.append(urwid.Text(HELP))
         self.box.body.append(BackButton('BACK', self.load_dispatch,
-                                        self.current))
+                                        self.current, self))
         self.box.set_focus(1)
         self.frame.focus_position = 'body'
 
@@ -348,7 +363,10 @@ class App(object):
         self._clear_box()
         if dirname != '.':
             prevdir = os.path.normpath(dirname + '/..')
-            self.box.body.append(BackButton('..', self.dir_load, prevdir))
+            self.box.body.append(BackButton('..', self.dir_load, prevdir,
+                                            self))
+        else:
+            self.back_callback = None
         self._make_directory_buttons(new_directories)
         self._make_password_buttons(new_passwords)
 
@@ -359,7 +377,7 @@ class App(object):
         self.mode = 'pass_load'
         self._clear_box()
         prevdir = os.path.dirname(path) or '.'
-        self.box.body.append(BackButton('BACK', self.dir_load, prevdir))
+        self.box.body.append(BackButton('BACK', self.dir_load, prevdir, self))
         self.box.body.append(ActionButton('DISPLAY', self.call_pass,
                                           (path, False)))
         self.box.body.append(ActionButton('COPY', self.call_pass,
@@ -402,13 +420,23 @@ class App(object):
                 urwid.Text(('error', stderr.strip())))
         self.box.body.append(BackButton(
             'BACK TO DIRECTORY', self.dir_load,
-            os.path.dirname(self.current) or '.'))
+            os.path.dirname(self.current) or '.', self))
         self.box.body.append(BackButton(
-            'BACK TO PASSWORD', self.pass_load, self.current))
+            'BACK TO PASSWORD', self.pass_load, self.current, self))
         if p.returncode != 0:
             self.box.set_focus(3)
         else:
             self.box.set_focus(1)
+
+    def uplevel(self, event=None):
+        """Go up one level."""
+        if self.back_callback is not None:
+            self.back_callback('uplevel', self.back_arg)
+
+    def downlevel(self, event=None):
+        """Go down one level."""
+        b = self.box.get_focus()[0]
+        b._emit('click')
 
     def _make_directory_buttons(self, new_directories):
         """Add directory buttons to the box."""

@@ -39,21 +39,47 @@ Console UI for pass.
 :License: BSD (see /LICENSE).
 """
 
+import os
+import pkg_resources
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
 __title__ = 'upass'
 __version__ = '0.1.7'
 __author__ = 'Chris Warrick'
 __license__ = '3-clause BSD'
 __docformat__ = 'restructuredtext en'
 
-__all__ = ('upassError',)
-
-# import gettext
-# G = gettext.translation('upass', '/usr/share/locale', fallback='C')
-# _ = G.gettext
+__all__ = ('config',)
 
 
-class upassError(Exception):
+# Config directory setup
+confhome = os.getenv('XDG_CONFIG_HOME')
+if confhome is None:
+    confhome = os.path.expanduser('~/.config/')
 
-    """Exceptions raised by upass."""
+kwdir = os.path.join(confhome, 'kwpolska')
+confdir = os.path.join(kwdir, 'upass')
+confpath = os.path.join(confdir, 'upass.ini')
 
-    pass
+if not os.path.exists(confhome):
+    os.mkdir(confhome)
+if not os.path.exists(kwdir):
+    os.mkdir(kwdir)
+if not os.path.exists(confdir):
+    os.mkdir(confdir)
+
+if not os.path.exists(confpath):
+    print("upass.ini does not exist, creating")
+    with open(confpath, 'wb') as fh:
+        fh.write(pkg_resources.resource_string(
+            'upass', 'data/upass.ini.skel'))
+    print("created " + confpath)
+
+# Configuration file support
+config = configparser.ConfigParser()
+config.read_string(pkg_resources.resource_string(
+            'upass', 'data/upass.ini.skel').decode('utf-8'))
+config.read([confpath], encoding='utf-8')

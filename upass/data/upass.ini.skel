@@ -1,0 +1,9 @@
+[keys]
+help=? h
+display=d s
+copy=c
+refresh=r
+search=/
+quit=q f10
+uplevel_h=off
+downlevel_l=off
