@@ -32,6 +32,15 @@ Available commands:
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
 
 
+# Case folding.
+if sys.version_info[0] == 2:
+    try:
+        from py2casefold import casefold
+    except ImportError:
+        casefold = str.lower  # workaround
+else:
+    casefold = str.casefold
+
 class PasswordButton(urwid.Button):
 
     """A password button."""
@@ -164,9 +173,10 @@ class App(object):
             self.dir_load(None, self.current)
         else:
             self._clear_box()
-            self.box.body.extend([urwid.Text(("error", 'Your Password Store is empty.')),
-                               urwid.Text('Please use the `pass` command to create passwords. upass is a read-only browser.'),
-                               urwid.Text('Press q to exit.')])
+            self.box.body.extend([
+                urwid.Text(("error", 'Your Password Store is empty.')),
+                urwid.Text('Please use the `pass` command to create passwords. upass is a read-only browser.'),
+                urwid.Text('Press q to exit.')])
 
         column_data = [
             urwid.Button('DiSplay', self.display_selected),
@@ -268,9 +278,10 @@ class App(object):
     def search_results(self, originator):
         """Display the search results."""
         query = self.search_input.text[len("Keyword: "):]
+        query_cf = casefold(query)
         self.mode = 'search_results'
         self.set_header('SEARCH RESULTS FOR "{0}"'.format(query))
-        results = [i for i in self.passwords if query in i]
+        results = [i for i in self.passwords if query_cf in casefold(i)]
         self._clear_box()
         self.box.body.append(BackButton('BACK', self.load_dispatch,
                                         self.current))
