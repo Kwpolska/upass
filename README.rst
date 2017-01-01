@@ -3,7 +3,7 @@ upass.  Console UI for pass.
 ============================
 :Info: This is the README file for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
-:Copyright: © 2015-2016, Chris Warrick.
+:Copyright: © 2015-2017, Chris Warrick.
 :Date: 2016-03-24
 :Version: 0.1.7
 
@@ -27,7 +27,7 @@ Run `upass` and use the friendly console interface.
 COPYRIGHT
 ---------
 
-Copyright © 2015-2016, Chris Warrick.
+Copyright © 2015-2017, Chris Warrick.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
