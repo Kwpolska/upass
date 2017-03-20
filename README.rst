@@ -4,8 +4,8 @@ upass.  Console UI for pass.
 :Info: This is the README file for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2017, Chris Warrick.
-:Date: 2016-03-24
-:Version: 0.1.7
+:Date: 2017-03-20
+:Version: 0.1.8
 
 .. image:: https://chriswarrick.com/galleries/upass/directory-listing.png
 
@@ -21,8 +21,21 @@ There are also AUR packages available.
 USAGE
 -----
 
-Run `upass` and use the friendly console interface.
+Run ``upass`` and use the friendly console interface.
 
+CONFIGURATION
+-------------
+
+upass stores its config in ``~/.config/kwpolska/upass/upass.ini`` (but it
+respects ``XDG_CONFIG_HOME`` if you changed it). Available options:
+
+* keys — keybinding configuration.
+  * help, display, copy, refresh, search, quit — set key bindings for commands,
+    space-separated (eg. ``quit=q f10`` will make ``q`` and ``f10`` keybindings
+    for ``quit``)
+  * ``uplevel_h`` — on/off, use the ``h`` key as a back button, make sure to change
+    your ``help`` key bindings
+  * ``downlevel_l`` — on/off, use the ``l`` key to open directory/password
 
 COPYRIGHT
 ---------

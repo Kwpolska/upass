@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.1.7
+# upass v0.1.8
 # Console UI for pass.
 # Copyright © 2015-2017, Chris Warrick.
 # All rights reserved.
@@ -44,7 +44,7 @@ import pkg_resources
 import configparser
 
 __title__ = 'upass'
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 __author__ = 'Chris Warrick'
 __license__ = '3-clause BSD'
 __docformat__ = 'restructuredtext en'
