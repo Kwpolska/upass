@@ -153,10 +153,10 @@ class App(object):
     palette = [
         ('header', 'white', 'dark red'),
         ('footer', 'white', 'dark blue'),
-        ('footer_reversed', 'standout', 'dark blue'),
-        ('highlight', 'light cyan', ''),
+        ('footer_reversed', 'dark blue', 'white'),
+        ('highlight', 'light blue', ''),
         ('error', 'light red', ''),
-        ('button', 'white', ''),
+        ('button', 'default', ''),
         ('button_reversed', 'standout', ''),
     ]
     back_callback = None
