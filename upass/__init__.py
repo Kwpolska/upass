@@ -41,10 +41,7 @@ Console UI for pass.
 
 import os
 import pkg_resources
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+import configparser
 
 __title__ = 'upass'
 __version__ = '0.1.7'
