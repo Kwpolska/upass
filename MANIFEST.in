@@ -1,4 +1,4 @@
-graft {{ cookiecutter.repo_name }}
+graft upass
 graft docs
 graft tests
 include README.rst AUTHORS LICENSE CHANGELOG.rst setup.py setup.cfg requirements.txt

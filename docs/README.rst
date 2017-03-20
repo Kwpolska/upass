@@ -5,7 +5,7 @@ upass.  Console UI for pass.
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2017, Chris Warrick.
 :Date: 2017-03-20
-:Version: 0.1.8
+:Version: 0.1.9
 
 .. image:: https://chriswarrick.com/galleries/upass/directory-listing.png
 

@@ -7,7 +7,7 @@ with open('requirements.txt', 'r') as fh:
     dependencies = [l.strip() for l in fh]
 
 setup(name='upass',
-      version='0.1.8',
+      version='0.1.9',
       description='Console UI for pass.',
       keywords='upass',
       author='Chris Warrick',
@@ -17,6 +17,7 @@ setup(name='upass',
       long_description=io.open('./docs/README.rst', 'r', encoding='utf-8').read(),
       platforms='any',
       zip_safe=False,
+      include_package_data=True,
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=['Development Status :: 3 - Alpha',
                    'Programming Language :: Python',

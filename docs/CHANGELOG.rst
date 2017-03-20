@@ -6,7 +6,7 @@ Appendix C. Changelog
 :Copyright: © 2015-2017, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
 :Date: 2017-03-20
-:Version: 0.1.8
+:Version: 0.1.9
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.9
+    * Include missing data files
 
 0.1.8
     * Universal color scheme (for dark and light terminals)
