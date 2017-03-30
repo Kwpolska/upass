@@ -171,7 +171,7 @@ class App(object):
         self.box = FancyListBox(urwid.SimpleFocusListWalker(listbox_content))
         self.box._app = self
 
-        self.home = os.path.expanduser('~/.password-store')
+        self.home = os.environ.get('PASSWORD_STORE_DIR', os.path.expanduser('~/.password-store'))
         if os.path.exists(self.home) and os.listdir(self.home):
             self.refresh()
             self.current = '.'
