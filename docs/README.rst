@@ -4,8 +4,8 @@ upass.  Console UI for pass.
 :Info: This is the README file for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2017, Chris Warrick.
-:Date: 2017-03-20
-:Version: 0.1.9
+:Date: 2017-04-01
+:Version: 0.1.10
 
 .. image:: https://chriswarrick.com/galleries/upass/directory-listing.png
 

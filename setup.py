@@ -7,7 +7,7 @@ with open('requirements.txt', 'r') as fh:
     dependencies = [l.strip() for l in fh]
 
 setup(name='upass',
-      version='0.1.9',
+      version='0.1.10',
       description='Console UI for pass.',
       keywords='upass',
       author='Chris Warrick',

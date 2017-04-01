@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2017, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2017-03-20
-:Version: 0.1.9
+:Date: 2017-04-01
+:Version: 0.1.10
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.1.10
+    * Respect ``PASSWORD_STORE_DIR`` environment variable (if it’s set)
 
 0.1.9
     * Include missing data files
