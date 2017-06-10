@@ -5,8 +5,8 @@ Appendix C. Changelog
 :Author: Chris Warrick <chris@chriswarrick.com>
 :Copyright: © 2015-2017, Chris Warrick.
 :License: BSD (see /LICENSE or :doc:`Appendix B <LICENSE>`.)
-:Date: 2017-04-01
-:Version: 0.1.10
+:Date: 2017-06-10
+:Version: 0.2.0
 
 .. index:: CHANGELOG
 
@@ -18,6 +18,9 @@ More information can be found on GitHub in the `releases section
 
 Version History
 ===============
+
+0.2.0
+    More granular copying features: users can now choose between copying the first line (old default), copying the entire text, or copying specific fields that are separated with ``: `` (colon, space).
 
 0.1.10
     * Respect ``PASSWORD_STORE_DIR`` environment variable (if it’s set)
