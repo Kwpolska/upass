@@ -1,6 +1,6 @@
-#!/usr/bin/env python
-# AURvm client script
-# Usage: ./aurvm_client.py $PROJECT $PROJECTLC $version use_git[true|false]
+#!/usr/bin/env python3
+# AURvm host script
+# Usage: base64-encoded JSON on stdin
 # Part of the Python Project Template.
 # Copyright © 2013-2017, Chris Warrick.
 # All rights reserved.
@@ -36,31 +36,45 @@
 import base64
 import io
 import json
+import os
 import subprocess
 import sys
 
-try:
-    _, project, projectlc, version, use_git = sys.argv
-except ValueError:
-    print("Usage: ./aurvm_client.py $PROJECT $PROJECTLC $version use_git[true|false]")
+BASEDIR = os.path.expanduser('~/git/aur-pkgbuilds')
 
-use_git = True if use_git == 'true' else False
-if use_git:
-    gitver = subprocess.check_output(r"git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g;s/^v//g'", shell=True)
-    gitver = gitver.decode('utf-8').strip()
-else:
-    gitver = None
 
-with io.open('PKGBUILD', 'r', encoding='utf-8') as fh:
-    pkgbuild = fh.read()
+def commitaur(msg):
+    with open('.SRCINFO', 'wb') as fh:
+        fh.write(subprocess.check_output(['makepkg', '--printsrcinfo']))
+    subprocess.check_call(['git', 'add', '.'])
+    subprocess.check_call(['git', 'commit', '-asm', msg])
+    subprocess.check_call(['git', 'push', '-u', 'origin', 'master'])
 
-data = json.dumps({
-    'project': project,
-    'projectlc': projectlc,
-    'version': version,
-    'use_git': use_git,
-    'gitver': gitver,
-    'pkgbuild': pkgbuild
-}, ensure_ascii=True, sort_keys=True).encode('utf-8')
 
-print(base64.b64encode(data).decode('utf-8'))
+data = base64.b64decode(sys.stdin.read().encode('utf-8'))
+data = json.loads(data.decode('utf-8'))
+if data['_api'] != 2:
+    print("API version does not match")
+
+msg = data['project'] + ' v' + data['version']
+sys.stderr.write("[host] Updating AUR packages...\n")
+sys.stderr.flush()
+
+os.chdir(BASEDIR)
+os.chdir(data['aur_pkgname'])
+with io.open('PKGBUILD', 'w', encoding='utf-8') as fh:
+    fh.write(data['pkgbuild'])
+commitaur(msg)
+os.chdir(BASEDIR)
+
+if data['use_git']:
+    os.chdir(data['aur_pkgname_git'])
+    subprocess.check_call(["sed", "s/pkgver=.*/pkgver=" + data['gitver'] + "/", "PKGBUILD", "-i"])
+    commitaur(msg)
+    os.chdir(BASEDIR)
+
+subprocess.check_call(['./UPDATE-REQUIREMENTS.py'])
+subprocess.check_call(['git', 'commit', '-asm', msg])
+subprocess.check_call(['git', 'push'])
+sys.stderr.write("[host] Done!\n")
+sys.stderr.flush()
