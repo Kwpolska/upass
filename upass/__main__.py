@@ -384,7 +384,7 @@ class App(object):
                                           (path, True, False)))
         self.box.body.append(ActionButton('COPY EVERYTHING', self.call_pass,
                                           (path, True, True)))
-        self.box.body.append(urwid.Text("More copy options are available after viewing password."))
+        self.box.body.append(urwid.Text("More copy options are available after displaying the password."))
 
     def call_pass(self, originator, args):
         """Call pass to get a password."""
