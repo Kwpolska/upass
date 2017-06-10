@@ -400,12 +400,17 @@ class App(object):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self._clear_box()
+            try:
+                copytarget = stdout.decode('utf-8')
+            except AttributeError:
+                copytarget = stdout
             if copy:
-                try:
-                    copytarget = stdout.decode('utf-8')
-                except AttributeError:
-                    copytarget = stdout
-                copytarget = copytarget.split('\n', 1)[0]
+                if type(copy) == type(True):
+                    copytarget = copytarget.split('\n', 1)[0]
+                else:
+                    copytarget = copytarget.split('\n')[copy]
+                    copytarget = copytarget.split(': ')[1]
+                    pass
                 pyperclip.copy(copytarget)
                 self.box.body.append(
                     urwid.AttrMap(
@@ -414,6 +419,13 @@ class App(object):
                 self.box.body.append(urwid.Text(stdout.strip()))
                 self.box.body.append(ActionButton('COPY', self.call_pass,
                                                   (self.current, True)))
+                for index, line in enumerate(copytarget.split('\n')):
+                    entry = line.split(': ')
+                    if len(entry) > 1:
+                        self.box.body.append(ActionButton('COPY ' + entry[0], self.call_pass,
+                                                        (self.current, index)))
+                        pass
+                    pass
         else:
             self.box.body.append(urwid.Text(('error', 'ERROR')))
             self.box.body.append(
