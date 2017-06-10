@@ -270,13 +270,13 @@ class App(object):
         """Display the currently selected password."""
         path, pathg = self.get_selected_password(originator)
         if pathg in self.passwords:
-            self.call_pass(originator, (path, False))
+            self.call_pass(originator, (path, False, None))
 
     def copy_selected(self, originator):
         """Copy the currently selected password."""
         path, pathg = self.get_selected_password(originator)
         if pathg in self.passwords:
-            self.call_pass(originator, (path, True))
+            self.call_pass(originator, (path, True, False))
 
     def search(self, originator):
         """Display the search box."""
@@ -379,13 +379,16 @@ class App(object):
         prevdir = os.path.dirname(path) or '.'
         self.box.body.append(BackButton('BACK', self.dir_load, prevdir, self))
         self.box.body.append(ActionButton('DISPLAY', self.call_pass,
-                                          (path, False)))
-        self.box.body.append(ActionButton('COPY', self.call_pass,
-                                          (path, True)))
+                                          (path, False, None)))
+        self.box.body.append(ActionButton('COPY FIRST LINE', self.call_pass,
+                                          (path, True, False)))
+        self.box.body.append(ActionButton('COPY EVERYTHING', self.call_pass,
+                                          (path, True, True)))
+        self.box.body.append(urwid.Text("More copy options are available after viewing password."))
 
     def call_pass(self, originator, args):
         """Call pass to get a password."""
-        self.current, copy = args
+        self.current, copy, copy_key = args
         self.set_header(self.current)
         pargs = ['pass', self.current]
         copymsg = ' and copying output afterwards' if copy else ''
@@ -401,31 +404,45 @@ class App(object):
         if p.returncode == 0:
             self._clear_box()
             try:
-                copytarget = stdout.decode('utf-8')
+                text = stdout.decode('utf-8')
             except AttributeError:
-                copytarget = stdout
+                text = stdout
+
+            copiable_entries = {}
+            copiable_keys = []
+
+            for index, line in enumerate(text.split('\n')):
+                entry = line.split(': ', 1)
+                if len(entry) > 1:
+                    copiable_entries[entry[0]] = entry[1]
+                    copiable_keys.append(entry[0])
+
             if copy:
-                if type(copy) == type(True):
-                    copytarget = copytarget.split('\n', 1)[0]
-                else:
-                    copytarget = copytarget.split('\n')[copy]
-                    copytarget = copytarget.split(': ')[1]
-                    pass
+                if copy_key is False:  # False: copy first line
+                    copytarget = text.split('\n', 1)[0]
+                    copy_key = 'first line'
+                elif copy_key is True:  # True: copy everything
+                    copytarget = text
+                    copy_key = 'everything'
+                else:  # string: copy whatever is passed
+                    copytarget = copiable_entries[copy_key]
+
                 pyperclip.copy(copytarget)
                 self.box.body.append(
                     urwid.AttrMap(
-                        urwid.Text('Copied to clipboard.'), 'highlight'))
+                        urwid.Text('Copied {0} to clipboard.'.format(copy_key)),
+                        'highlight'))
             else:
-                self.box.body.append(urwid.Text(stdout.strip()))
-                self.box.body.append(ActionButton('COPY', self.call_pass,
-                                                  (self.current, True)))
-                for index, line in enumerate(copytarget.split('\n')):
-                    entry = line.split(': ')
-                    if len(entry) > 1:
-                        self.box.body.append(ActionButton('COPY ' + entry[0], self.call_pass,
-                                                        (self.current, index)))
-                        pass
-                    pass
+                self.box.body.append(urwid.Text(text.strip()))
+
+            self.box.body.append(ActionButton('COPY FIRST LINE', self.call_pass,
+                                              (self.current, True, False)))
+            self.box.body.append(ActionButton('COPY EVERYTHING', self.call_pass,
+                                              (self.current, True, True)))
+
+            for k in copiable_keys:
+                self.box.body.append(ActionButton('COPY {0}'.format(k), self.call_pass,
+                                                  (self.current, True, k)))
         else:
             self.box.body.append(urwid.Text(('error', 'ERROR')))
             self.box.body.append(
