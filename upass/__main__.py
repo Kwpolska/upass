@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# upass v0.2.0
+# upass v0.2.1
 # Console UI for pass.
 # Copyright © 2015-2017, Chris Warrick.
 # See /LICENSE for licensing information.
@@ -177,11 +177,7 @@ class App(object):
             self.current = '.'
             self.dir_load(None, self.current)
         else:
-            self._clear_box()
-            self.box.body.extend([
-                urwid.Text(("error", 'Your Password Store is empty.')),
-                urwid.Text('Please use the `pass` command to create passwords. upass is a read-only browser.'),
-                urwid.Text('Press q to exit.')])
+            self.show_empty_error()
 
         column_data = [
             urwid.Button('DiSplay', self.display_selected),
@@ -366,6 +362,8 @@ class App(object):
             self.box.body.append(BackButton('..', self.dir_load, prevdir,
                                             self))
         else:
+            if not new_directories and not new_passwords:
+                self.show_empty_error()
             self.back_callback = None
         self._make_directory_buttons(new_directories)
         self._make_password_buttons(new_passwords)
@@ -466,6 +464,14 @@ class App(object):
         """Go down one level."""
         b = self.box.get_focus()[0]
         b._emit('click')
+
+    def show_empty_error(self):
+        """Show an error when the store is empty."""
+        self._clear_box()
+        self.box.body.extend([
+            urwid.Text(("error", 'Your Password Store is empty.')),
+            urwid.Text('Please use the `pass` command to create passwords. upass is a read-only browser.'),
+            urwid.Text('Press q to exit.')])
 
     def _make_directory_buttons(self, new_directories):
         """Add directory buttons to the box."""
