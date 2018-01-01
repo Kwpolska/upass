@@ -3,7 +3,7 @@ upass.  Console UI for pass.
 ============================
 :Info: This is the README file for upass.
 :Author: Chris Warrick <chris@chriswarrick.com>
-:Copyright: © 2015-2017, Chris Warrick.
+:Copyright: © 2015-2018, Chris Warrick.
 :Date: 2017-12-24
 :Version: 0.2.1
 
@@ -40,7 +40,7 @@ respects ``XDG_CONFIG_HOME`` if you changed it). Available options:
 COPYRIGHT
 ---------
 
-Copyright © 2015-2017, Chris Warrick.
+Copyright © 2015-2018, Chris Warrick.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
