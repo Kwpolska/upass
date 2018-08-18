@@ -2,6 +2,7 @@
 help=? h
 display=d s
 copy=c
+generate=g
 refresh=r
 search=/
 quit=q f10

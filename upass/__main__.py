@@ -25,11 +25,14 @@ Available commands (with default key bindings):
    d display
    s display
    c copy
+   g generate
    r refresh
    / search
    h help
    q quit
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
+
+GENERATE_PASSWORD_PROMPT = "Password Name: "
 
 
 # Case folding
@@ -182,6 +185,7 @@ class App(object):
         column_data = [
             urwid.Button('DiSplay', self.display_selected),
             urwid.Button('Copy', self.copy_selected),
+            urwid.Button('Generate', self.generate_password),
             urwid.Button('Refresh', self.refresh_and_reload),
             urwid.Button('/search', self.search),
             urwid.Button('Help', self.help),
@@ -196,6 +200,7 @@ class App(object):
         ini_commands = {
             'display': self.display_selected,
             'copy': self.copy_selected,
+            'generate': self.generate_password,
             'refresh': self.refresh_and_reload,
             'search': self.search,
             'help': self.help,
@@ -273,6 +278,70 @@ class App(object):
         path, pathg = self.get_selected_password(originator)
         if pathg in self.passwords:
             self.call_pass(originator, (path, True, False))
+
+    def generate_password(self, originator, args=None):
+        if args:
+            path, length, symbols, force = args
+        else:
+            path, length, symbols, force = '', 16, True, False
+        if not path and self.current != '.':
+            path = self.current + '/'
+        self.set_header('GENERATE PASSWORD')
+        self._clear_box()
+        self.generate_password_path = urwid.Edit(("highlight", "{0}{1}".format(GENERATE_PASSWORD_PROMPT, path)))
+        self.generate_password_length = urwid.IntEdit("Length: ", default=length)
+        self.generate_password_symbols = urwid.CheckBox("Symbols? ", state=symbols)
+        self.generate_password_force = urwid.CheckBox("Overwrite existing passwords with that name? ", state=force)
+        self.box.body.append(self.generate_password_path)
+        self.box.body.append(self.generate_password_length)
+        self.box.body.append(self.generate_password_symbols)
+        self.box.body.append(self.generate_password_force)
+        self.box.body.append(ActionButton('GENERATE', self.call_generate))
+        self.box.body.append(BackButton('BACK', self.load_dispatch,
+                                        self.current, self))
+
+    def call_generate(self, originator):
+        gargs = ['pass', 'generate']
+        symbols = self.generate_password_symbols.state
+        force = self.generate_password_force.state
+        if not symbols:
+            gargs.append('-n')
+        if force:
+            gargs.append('-f')
+        path = self.generate_password_path.text[len(GENERATE_PASSWORD_PROMPT):]
+        length = str(self.generate_password_length.value())
+        gargs += [path, length]
+        self._clear_box()
+        self.box.body.append(urwid.AttrMap(
+            urwid.Text('Generating "{0}": (length: {1}, symbols: {2}, overwrite: {3})'.format(path, length,
+                                                                                              symbols, force)),
+            'highlight'))
+        self.loop.draw_screen()
+        p = subprocess.Popen(gargs, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        if path.endswith('/'):
+            errormsg = 'Invalid key path "{0}". Please enter a valid password name.'.format(path)
+        else:
+            try:
+                stdout, errormsg = p.communicate(timeout=1)
+                if p.returncode == 0:
+                    self.current = path
+                    self.refresh_and_reload(self.generate_password)
+                    self.pass_load(self.generate_password, path)
+            # pass generate will prompt a user to confirm overwriting existing passwords if the -force flag has not
+            # been passed. This causes the subprocess to hang while waiting for user input.
+            except subprocess.TimeoutExpired:
+                errormsg = ('Password with name "{0}" already exists. '
+                            'Please select the option to overwrite the existing password to generate a new password '
+                            'for this entry.'.format(path))
+        if errormsg:
+            self._clear_box()
+            self.box.body.append(urwid.Text(('error', 'ERROR')))
+            self.box.body.append(
+                urwid.Text(('error', errormsg.strip())))
+            self.box.body.append(ActionButton('GENERATE PASSWORD', self.generate_password,
+                                              (path, length, symbols, force)))
+            self.box.body.append(BackButton('BACK', self.load_dispatch, self.current, self))
 
     def search(self, originator):
         """Display the search box."""
@@ -382,6 +451,7 @@ class App(object):
                                           (path, True, False)))
         self.box.body.append(ActionButton('COPY EVERYTHING', self.call_pass,
                                           (path, True, True)))
+        self.box.body.append(ActionButton('GENERATE NEW PASSWORD', self.generate_password, (path, 16, True, True)))
         self.box.body.append(urwid.Text("More copy options are available after displaying the password."))
 
     def call_pass(self, originator, args):
@@ -494,6 +564,7 @@ class App(object):
 def main():
     """The main function of upass."""
     return App().run()
+
 
 if __name__ == '__main__':
     try:
