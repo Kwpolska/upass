@@ -32,9 +32,6 @@ Available commands (with default key bindings):
    q quit
 upass requires pass installed and in $PATH: http://www.passwordstore.org/"""
 
-GENERATE_PASSWORD_PROMPT = "Password Name: "
-
-
 # Case folding
 if sys.version_info[0] == 2:
     try:
@@ -288,17 +285,16 @@ class App(object):
             path = self.current + '/'
         self.set_header('GENERATE PASSWORD')
         self._clear_box()
-        self.generate_password_path = urwid.Edit(("highlight", "{0}{1}".format(GENERATE_PASSWORD_PROMPT, path)))
+        self.generate_password_path = urwid.Edit(("highlight", "Passowrd Name: "), path)
         self.generate_password_length = urwid.IntEdit("Length: ", default=length)
-        self.generate_password_symbols = urwid.CheckBox("Symbols? ", state=symbols)
-        self.generate_password_force = urwid.CheckBox("Overwrite existing passwords with that name? ", state=force)
+        self.generate_password_symbols = urwid.CheckBox("Symbols", state=symbols)
+        self.generate_password_force = urwid.CheckBox("Overwrite existing passwords with that name", state=force)
         self.box.body.append(self.generate_password_path)
         self.box.body.append(self.generate_password_length)
         self.box.body.append(self.generate_password_symbols)
         self.box.body.append(self.generate_password_force)
         self.box.body.append(ActionButton('GENERATE', self.call_generate))
-        self.box.body.append(BackButton('BACK', self.load_dispatch,
-                                        self.current, self))
+        self.box.body.append(BackButton('BACK', self.load_dispatch, self.current, self))
 
     def call_generate(self, originator):
         gargs = ['pass', 'generate']
@@ -308,32 +304,29 @@ class App(object):
             gargs.append('-n')
         if force:
             gargs.append('-f')
-        path = self.generate_password_path.text[len(GENERATE_PASSWORD_PROMPT):]
+        path = self.generate_password_path.text[len("Password Name: "):]
         length = str(self.generate_password_length.value())
         gargs += [path, length]
         self._clear_box()
         self.box.body.append(urwid.AttrMap(
-            urwid.Text('Generating "{0}": (length: {1}, symbols: {2}, overwrite: {3})'.format(path, length,
-                                                                                              symbols, force)),
-            'highlight'))
+            urwid.Text(
+                'Generating "{0}": (length: {1}, symbols: {2}, overwrite: {3})'.format(path, length, symbols, force)
+            ), 'highlight')
+        )
         self.loop.draw_screen()
-        p = subprocess.Popen(gargs, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
         if path.endswith('/'):
             errormsg = 'Invalid key path "{0}". Please enter a valid password name.'.format(path)
+        elif os.path.exists(os.path.join(self.home, path + '.gpg')) and not force:
+            errormsg = ('Password with name "{0}" already exists. '
+                        'Please select the option to overwrite the existing password to generate a new password '
+                        'for this entry.'.format(path))
         else:
-            try:
-                stdout, errormsg = p.communicate(timeout=1)
-                if p.returncode == 0:
-                    self.current = path
-                    self.refresh_and_reload(self.generate_password)
-                    self.pass_load(self.generate_password, path)
-            # pass generate will prompt a user to confirm overwriting existing passwords if the -force flag has not
-            # been passed. This causes the subprocess to hang while waiting for user input.
-            except subprocess.TimeoutExpired:
-                errormsg = ('Password with name "{0}" already exists. '
-                            'Please select the option to overwrite the existing password to generate a new password '
-                            'for this entry.'.format(path))
+            p = subprocess.Popen(gargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, errormsg = p.communicate()
+            if p.returncode == 0:
+                self.current = path
+                self.refresh_and_reload(self.generate_password)
+                self.pass_load(self.generate_password, path)
         if errormsg:
             self._clear_box()
             self.box.body.append(urwid.Text(('error', 'ERROR')))
