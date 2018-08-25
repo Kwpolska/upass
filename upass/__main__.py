@@ -12,6 +12,7 @@ upass user interface.
 """
 
 import os
+import re
 import sys
 import upass
 import urwid
@@ -110,9 +111,9 @@ class FancyListBox(urwid.ListBox):
             newfocus = 0
         elif key == 'end':
             newfocus = maxindex
-        elif key == 'k' and self._app.mode != 'search':
+        elif key == 'k' and self._app.mode not in ('search', 'generate'):
             newfocus = currentfocus - 1
-        elif key == 'j' and self._app.mode != 'search':
+        elif key == 'j' and self._app.mode not in ('search', 'generate'):
             newfocus = currentfocus + 1
         if newfocus is not None:
             if newfocus < 0:
@@ -277,6 +278,7 @@ class App(object):
             self.call_pass(originator, (path, True, False))
 
     def generate_password(self, originator, args=None):
+        self.mode = 'generate'
         if args:
             path, length, symbols, force = args
         else:
@@ -285,7 +287,7 @@ class App(object):
             path = self.current + '/'
         self.set_header('GENERATE PASSWORD')
         self._clear_box()
-        self.generate_password_path = urwid.Edit(("highlight", "Passowrd Name: "), path)
+        self.generate_password_path = urwid.Edit(("highlight", "Password Name: "), path)
         self.generate_password_length = urwid.IntEdit("Length: ", default=length)
         self.generate_password_symbols = urwid.CheckBox("Symbols", state=symbols)
         self.generate_password_force = urwid.CheckBox("Overwrite existing passwords with that name", state=force)
@@ -297,16 +299,10 @@ class App(object):
         self.box.body.append(BackButton('BACK', self.load_dispatch, self.current, self))
 
     def call_generate(self, originator):
-        gargs = ['pass', 'generate']
+        path = self.generate_password_path.edit_text
+        length = str(self.generate_password_length.value())
         symbols = self.generate_password_symbols.state
         force = self.generate_password_force.state
-        if not symbols:
-            gargs.append('-n')
-        if force:
-            gargs.append('-f')
-        path = self.generate_password_path.text[len("Password Name: "):]
-        length = str(self.generate_password_length.value())
-        gargs += [path, length]
         self._clear_box()
         self.box.body.append(urwid.AttrMap(
             urwid.Text(
@@ -314,27 +310,49 @@ class App(object):
             ), 'highlight')
         )
         self.loop.draw_screen()
-        if path.endswith('/'):
-            errormsg = 'Invalid key path "{0}". Please enter a valid password name.'.format(path)
-        elif os.path.exists(os.path.join(self.home, path + '.gpg')) and not force:
-            errormsg = ('Password with name "{0}" already exists. '
-                        'Please select the option to overwrite the existing password to generate a new password '
-                        'for this entry.'.format(path))
+        result_msg, error_msg = '', ''
+        if not path or path.endswith('/'):
+            error_msg = 'Invalid key path "{0}". Please enter a valid password name.'.format(path)
+        elif self._store_key_exists(path) and not force:
+            error_msg = ('Password with name "{0}" already exists. '
+                         'Please select the option to overwrite the existing password to generate a new password '
+                         'for this entry.'.format(path))
         else:
+            gargs = ['pass', 'generate']
+            if not symbols:
+                gargs.append('-n')
+            if force:
+                gargs.append('-f')
+            gargs.extend([path, length])
             p = subprocess.Popen(gargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, errormsg = p.communicate()
-            if p.returncode == 0:
-                self.current = path
-                self.refresh_and_reload(self.generate_password)
-                self.pass_load(self.generate_password, path)
-        if errormsg:
-            self._clear_box()
+            try:
+                stdout, stderr = p.communicate(timeout=5)
+                if p.returncode == 0:
+                    self.refresh()
+                if stdout:
+                    # Strip ANSI escape codes for text styling and colors from stdout.
+                    ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+                    result_msg = ansi_escape.sub('', stdout.decode('utf-8'))
+                if stderr:
+                    error_msg = stderr.decode('utf-8')
+            except subprocess.TimeoutExpired:
+                error_msg = 'Command timed out: {0}'.format(' '.join(gargs))
+        self._clear_box()
+        self.mode = 'generate_results'
+        if error_msg:
             self.box.body.append(urwid.Text(('error', 'ERROR')))
-            self.box.body.append(
-                urwid.Text(('error', errormsg.strip())))
-            self.box.body.append(ActionButton('GENERATE PASSWORD', self.generate_password,
-                                              (path, length, symbols, force)))
-            self.box.body.append(BackButton('BACK', self.load_dispatch, self.current, self))
+            self.box.body.append(urwid.Text(('error', error_msg)))
+        if result_msg:
+            self.box.body.append(urwid.Text(result_msg))
+        if self._store_key_exists(path):
+            self.box.body.append(ActionButton('LOAD PASSWORD', self.pass_load, path))
+        self.box.body.append(ActionButton('GENERATE NEW PASSWORD', self.generate_password,
+                                          (path, length, symbols, force)))
+        self.box.body.append(BackButton('BACK TO DIRECTORY', self.dir_load,
+                                        os.path.dirname(path) or '.', self))
+
+    def _store_key_exists(self, path):
+        return os.path.exists(os.path.join(self.home, path + '.gpg'))
 
     def search(self, originator):
         """Display the search box."""
