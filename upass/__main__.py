@@ -147,6 +147,20 @@ class FancyListBox(urwid.ListBox):
             size, event, button, col, row, focus)
 
 
+class EditWithEnter(urwid.Edit):
+    kw_enter_handler = None
+
+    def __init__(self, *args, **kwargs):
+        if 'enter_handler' in kwargs:
+            self.enter_handler = kwargs.pop('enter_handler')
+        super(EditWithEnter, self).__init__(*args, **kwargs)
+
+    def keypress(self, size, key):
+        if key == 'enter' and self.enter_handler:
+            self.enter_handler(self)
+        return super(EditWithEnter, self).keypress(size, key)
+
+
 class App(object):
 
     """The upass app object."""
@@ -287,7 +301,9 @@ class App(object):
             path = self.current + '/'
         self.set_header('GENERATE PASSWORD')
         self._clear_box()
-        self.generate_password_path = urwid.Edit(("highlight", "Password Name: "), path)
+        self.generate_password_path = EditWithEnter(
+            ("highlight", "Password Name: "), path, multiline=False,
+            enter_handler=self.call_generate)
         self.generate_password_length = urwid.IntEdit("Length: ", default=length)
         self.generate_password_symbols = urwid.CheckBox("Symbols", state=symbols)
         self.generate_password_force = urwid.CheckBox("Overwrite existing passwords with that name", state=force)
