@@ -342,14 +342,17 @@ class App(object):
         if error_msg:
             self.box.body.append(urwid.Text(('error', 'ERROR')))
             self.box.body.append(urwid.Text(('error', error_msg)))
+            focus_position = 2
         if result_msg:
             self.box.body.append(urwid.Text(result_msg))
+            focus_position = 1
         if self._store_key_exists(path):
             self.box.body.append(ActionButton('LOAD PASSWORD', self.pass_load, path))
         self.box.body.append(ActionButton('GENERATE NEW PASSWORD', self.generate_password,
                                           (path, length, symbols, force)))
         self.box.body.append(BackButton('BACK TO DIRECTORY', self.dir_load,
                                         os.path.dirname(path) or '.', self))
+        self.box.set_focus(focus_position)
 
     def _store_key_exists(self, path):
         return os.path.exists(os.path.join(self.home, path + '.gpg'))
