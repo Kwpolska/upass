@@ -7,7 +7,7 @@ with open('requirements.txt', 'r') as fh:
     dependencies = [l.strip() for l in fh]
 
 setup(name='upass',
-      version='0.2.1',
+      version='0.3.0',
       description='Console UI for pass.',
       keywords='upass',
       author='Chris Warrick',
@@ -27,7 +27,8 @@ setup(name='upass',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
-                   'Programming Language :: Python :: 3.6'],
+                   'Programming Language :: Python :: 3.6',
+                   'Programming Language :: Python :: 3.7'],
       packages=['upass'],
       install_requires=dependencies,
       extras_require={
