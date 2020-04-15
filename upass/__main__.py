@@ -208,6 +208,9 @@ class App(object):
 
         self.footer = urwid.Columns(column_data)
 
+        # Load pass command from ini file
+        self.command = upass.config['general'].get('command', 'pass')
+
         # Load keys from ini file
         ini_commands = {
             'display': self.display_selected,
@@ -334,7 +337,7 @@ class App(object):
                          'Please select the option to overwrite the existing password to generate a new password '
                          'for this entry.'.format(path))
         else:
-            gargs = ['pass', 'generate']
+            gargs = [self.command, 'generate']
             if not symbols:
                 gargs.append('-n')
             if force:
@@ -488,7 +491,7 @@ class App(object):
         """Call pass to get a password."""
         self.current, copy, copy_key = args
         self.set_header(self.current)
-        pargs = ['pass', self.current]
+        pargs = [self.command, self.current]
         copymsg = ' and copying output afterwards' if copy else ''
         self.mode = 'call_pass'
         self._clear_box()

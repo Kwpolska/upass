@@ -29,7 +29,13 @@ CONFIGURATION
 upass stores its config in ``~/.config/kwpolska/upass/upass.ini`` (but it
 respects ``XDG_CONFIG_HOME`` if you changed it). Available options:
 
+* general - general configuration.
+
+  * command — set the command that implementst the ``pass`` API (Default:
+    ``pass``). This adds support for commands such as ``gopass``.
+
 * keys — keybinding configuration.
+
   * help, display, copy, refresh, search, quit — set key bindings for commands,
     space-separated (eg. ``quit=q f10`` will make ``q`` and ``f10`` keybindings
     for ``quit``)
