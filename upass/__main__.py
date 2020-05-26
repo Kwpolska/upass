@@ -187,6 +187,10 @@ class App(object):
         self.box._app = self
 
         self.home = os.environ.get('PASSWORD_STORE_DIR', os.path.expanduser('~/.password-store'))
+        if not os.path.exists(self.home):
+            self.home = os.path.join(os.environ.get(
+                'XDG_DATA_HOME', '~/.local/share'), 'password-store')
+
         if os.path.exists(self.home) and os.listdir(self.home):
             self.refresh()
             self.current = '.'
