@@ -240,6 +240,9 @@ class App(object):
         self.loop = urwid.MainLoop(self.frame, self.palette,
                                    unhandled_input=self._unhandled)
 
+        if upass.args['search']:
+            self.search(self.current)
+
     def _unhandled(self, key):
         """Handle unhandled input."""
         try:

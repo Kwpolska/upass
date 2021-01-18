@@ -42,6 +42,7 @@ Console UI for pass.
 import os
 import pkg_resources
 import configparser
+import argparse
 
 __title__ = 'upass'
 __version__ = '0.3.0'
@@ -51,6 +52,14 @@ __docformat__ = 'restructuredtext en'
 
 __all__ = ('config',)
 
+
+# Parse CLI args
+parser = argparse.ArgumentParser(
+        description='upass: a TUI frontend for pass.')
+parser.add_argument(
+        '-s', '--search', help='Start in search mode',
+        action='store_true')
+args = vars(parser.parse_args())
 
 # Config directory setup
 confhome = os.getenv('XDG_CONFIG_HOME')
