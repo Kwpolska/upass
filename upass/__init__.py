@@ -59,7 +59,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
         '-s', '--search', help='Start in search mode',
         action='store_true')
-args = vars(parser.parse_args())
+args = parser.parse_args()
 
 # Config directory setup
 confhome = os.getenv('XDG_CONFIG_HOME')
