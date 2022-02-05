@@ -266,7 +266,7 @@ class App(object):
         self.directories = []
         self.passwords = []
         self.recurse(self.home, '')
-        self.topdir_passwords = [i for i in os.listdir(self.home)
+        self.topdir_passwords = [i for i in sorted(os.listdir(self.home))
                                  if not i.startswith('.') and
                                  i not in self.directories]
 
@@ -425,7 +425,7 @@ class App(object):
     def recurse(self, home, subdir):
         """Recurse into directories."""
         path = os.path.join(home, subdir)
-        for i in os.listdir(path):
+        for i in sorted(os.listdir(path)):
             name = os.path.join(subdir, i)
             if i.startswith('.'):
                 continue
