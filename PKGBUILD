@@ -10,7 +10,7 @@ license=('BSD')
 options=(!emptydirs)
 source=("https://files.pythonhosted.org/packages/source/${_pyname:0:1}/${_pyname}/${_pyname}-${pkgver}.tar.gz")
 md5sums=('8b47c99a5be8dca5e302e9f8de8b3ee7')
-depends=('pass' 'python' 'python-setuptools' 'python-urwid' 'python-pyperclip')
+depends=('pass' 'python' 'python-setuptools' 'python-urwid' 'python-pyclip')
 
 prepare() {
   cd "${srcdir}/${_pyname}-${pkgver}"

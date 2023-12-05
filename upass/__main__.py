@@ -16,7 +16,7 @@ import re
 import sys
 import upass
 import urwid
-import pyperclip
+import pyclip
 import subprocess
 
 __all__ = ('main', 'App')
@@ -532,7 +532,7 @@ class App(object):
                 else:  # string: copy whatever is passed
                     copytarget = copiable_entries[copy_key]
 
-                pyperclip.copy(copytarget)
+                pyclip.copy(copytarget)
                 self.box.body.append(
                     urwid.AttrMap(
                         urwid.Text('Copied {0} to clipboard.'.format(copy_key)),

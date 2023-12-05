@@ -1,2 +1,2 @@
 urwid
-pyperclip
+pyclip
