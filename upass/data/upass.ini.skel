@@ -1,3 +1,6 @@
+[general]
+command=pass
+
 [keys]
 help=? h
 display=d s
