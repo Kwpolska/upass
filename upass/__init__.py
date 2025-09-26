@@ -40,7 +40,7 @@ Console UI for pass.
 """
 
 import os
-import pkg_resources
+import importlib.resources
 import configparser
 import argparse
 
@@ -77,15 +77,19 @@ if not os.path.exists(kwdir):
 if not os.path.exists(confdir):
     os.mkdir(confdir)
 
+ini_skel = (
+    importlib.resources.files('upass')
+    .joinpath('data/upass.ini.skel')
+    .read_text(encoding='utf-8')
+)
+
 if not os.path.exists(confpath):
     print("upass.ini does not exist, creating")
-    with open(confpath, 'wb') as fh:
-        fh.write(pkg_resources.resource_string(
-            'upass', 'data/upass.ini.skel'))
+    with open(confpath, 'w', encoding='utf-8') as fh:
+        fh.write(ini_skel)
     print("created " + confpath)
 
 # Configuration file support
 config = configparser.ConfigParser()
-config.read_string(pkg_resources.resource_string(
-            'upass', 'data/upass.ini.skel').decode('utf-8'))
+config.read_string(ini_skel)
 config.read([confpath], encoding='utf-8')
