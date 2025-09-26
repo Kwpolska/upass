@@ -21,21 +21,9 @@ setup(name='upass',
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=['Development Status :: 3 - Alpha',
                    'Programming Language :: Python',
-                   'Programming Language :: Python :: 2',
-                   'Programming Language :: Python :: 2.7',
-                   'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.3',
-                   'Programming Language :: Python :: 3.4',
-                   'Programming Language :: Python :: 3.5',
-                   'Programming Language :: Python :: 3.6',
-                   'Programming Language :: Python :: 3.7',
-                   'Programming Language :: Python :: 3.8',
                    'Programming Language :: Python :: 3.9'],
       packages=['upass'],
       install_requires=dependencies,
-      extras_require={
-            ':python_version == "2.7"': ['configparser']
-      },
       entry_points={
           'console_scripts': [
               'upass = upass.__main__:main',
